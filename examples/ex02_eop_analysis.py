@@ -1,8 +1,11 @@
 """
 Example 02: Geodesy - Earth Orientation Parameters (EOP) Analysis
 =================================================================
-Demonstrates the use of the `naveng.geodesy.eop` module for downloading IERS C04 data,
-extracting the Chandler wobble using FFT, and converting time scales.
+Demonstrates using the `geodesy_eop` package to download IERS C04 data,
+extract the Chandler wobble frequency via FFT, and convert time scales.
+
+This example is fully self-contained — it automatically downloads data
+from the IERS servers on first run.
 """
 
 import sys
@@ -12,18 +15,19 @@ from matplotlib.ticker import ScalarFormatter
 from datetime import datetime
 import numpy as np
 
-# Add the parent directory to the path so we can import naveng
+# Add the parent directory to the path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from geodesy_eop import EOPManager, EOPAnalyzer
 
 def main():
     print("--- 1. Initializing EOP Manager ---")
-    eop_mgr = EOPManager(cache_file="eopc04_IAU2000.txt")
+    cache_path = os.path.join(os.path.dirname(__file__), "eopc04_IAU2000.txt")
+    eop_mgr = EOPManager(cache_file=cache_path)
     
     print("Downloading / Loading IERS C04 EOP Data...")
     try:
-        data = eop_mgr.load(max_year=2024)
+        data = eop_mgr.load()
         print(f"Successfully loaded {len(data)} daily epochs.")
     except Exception as e:
         print(f"Failed to load EOP data: {e}")
@@ -38,7 +42,7 @@ def main():
     print(f"Chandler Wobble Amplitude: {spectrum['chandler_amp_rad']:.10f} rad")
 
     print("\n--- 3. Time Scale Conversion ---")
-    target_mjd = 57754.5 # Example epoch
+    target_mjd = 57754.5  # Example epoch
     mjd_ut1, offset = analyzer.convert_utc_to_ut1(target_mjd)
     print(f"Target Epoch MJD (UTC): {target_mjd}")
     print(f"UT1 - UTC Offset:       {offset:.6f} s")
@@ -58,8 +62,9 @@ def main():
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig('polar_motion_trajectory.png', dpi=300)
-    print("Saved 'polar_motion_trajectory.png'")
+    out1 = os.path.join(os.path.dirname(__file__), 'polar_motion_trajectory.png')
+    plt.savefig(out1, dpi=300)
+    print(f"Saved '{out1}'")
 
     # 4.2 Plot FFT Spectrum
     plt.figure(figsize=(10, 6))
@@ -75,8 +80,9 @@ def main():
         axis.set_major_formatter(ScalarFormatter())
         
     plt.tight_layout()
-    plt.savefig('polar_motion_spectrum.png', dpi=300)
-    print("Saved 'polar_motion_spectrum.png'")
+    out2 = os.path.join(os.path.dirname(__file__), 'polar_motion_spectrum.png')
+    plt.savefig(out2, dpi=300)
+    print(f"Saved '{out2}'")
 
 if __name__ == "__main__":
     main()

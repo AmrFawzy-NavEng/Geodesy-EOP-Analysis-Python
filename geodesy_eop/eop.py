@@ -31,7 +31,7 @@ class EOPManager:
             return True
         return False
 
-    def load(self, max_year: int = 2024) -> np.ndarray:
+    def load(self, max_year: int = 2100) -> np.ndarray:
         """
         Parses the cached EOP file up to a maximum year.
         Returns array columns: [MJD, xp, yp, UT1-UTC].

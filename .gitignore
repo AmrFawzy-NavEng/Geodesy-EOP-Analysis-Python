@@ -1,0 +1,10 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large files
+*.mat
+*.dat
+*.txt
+examples/eopc04_IAU2000.txt
